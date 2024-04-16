@@ -24,7 +24,12 @@ const AddProduct = ({open,setOpen}) => {
         {
           onSuccess: (data) => {
             alert("Product added successfully");
-            console.log("fg",data)
+            const obj = {
+              id: data?.id,
+              title: formData?.productName,
+              description: formData?.productDescription,
+              price: formData?.productPrice
+            }
             setOpen(false)
             // You can perform any action after successful product addition
           },

@@ -9,7 +9,7 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <div className="App">
-        <ProductList />
+        <ProductList/>
       </div>
     </QueryClientProvider>
   );
