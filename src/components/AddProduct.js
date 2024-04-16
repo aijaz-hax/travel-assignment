@@ -1,45 +1,43 @@
 import React, { useState } from 'react'
 import "./product.css";
 import { useMutation } from 'react-query';
-
-const AddProduct = ({open,setOpen}) => {
-
+import { toast } from 'react-toastify';
+const AddProduct = ({open,setOpen, setProduct, product}) => {
     const [formData, setFormData] = useState({
         productName: '',
         productDescription: '',
         productPrice: '',
       });
-
       const addProductMutation = useMutation(
-        async (formData) => {
+        async () => {
           const response = await fetch('https://dummyjson.com/products/add', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify({title:formData.productName}),
           });
           return response.json();
         },
         {
           onSuccess: (data) => {
-            alert("Product added successfully");
+            toast.success("Product added successfully")
             const obj = {
               id: data?.id,
               title: formData?.productName,
               description: formData?.productDescription,
               price: formData?.productPrice
             }
+            setProduct([obj, ...product])
             setOpen(false)
             // You can perform any action after successful product addition
           },
           onError: (error) => {
-            alert("something went wrong");
+            setOpen(false)
             // You can handle errors here
           },
         }
       );
-    
       const handleChange = (event) => {
         const { name, value } = event.target;
         setFormData({
@@ -47,15 +45,11 @@ const AddProduct = ({open,setOpen}) => {
           [name]: value,
         });
       };
-    
       const addProduct = async (event) => {
         event.preventDefault();
-    
         // Make sure to add validation or additional checks here if necessary
-    
         addProductMutation.mutate(formData);
       };
-
   return (
     <>
        {open && (
@@ -68,35 +62,35 @@ const AddProduct = ({open,setOpen}) => {
             <div className='modal-body'>
               <div className='modal-body-val'>
                 <h3 className='widthStyl'>Product Name:</h3>
-                <input 
-                  type='text' 
+                <input
+                  type='text'
                   name="productName"
-                  placeholder='Enter product name' 
+                  placeholder='Enter product name'
                   className="custom-input"
                   value={formData.productName}
-                  onChange={handleChange}  
+                  onChange={handleChange}
                   />
               </div>
               <div className='modal-body-val'>
                 <h3 className='widthStyl'>Description:</h3>
-                <textarea 
-                  type='text' 
+                <textarea
+                  type='text'
                   name="productDescription"
-                  placeholder='Enter description' 
+                  placeholder='Enter description'
                   className="custom-input"
                   value={formData.productDescription}
-                  onChange={handleChange}  
+                  onChange={handleChange}
                   />
               </div>
               <div className='modal-body-val'>
                 <h3 className='widthStyl'>Price:</h3>
-                <input 
-                  type='number' 
+                <input
+                  type='number'
                   name="productPrice"
-                  placeholder='Enter price' 
+                  placeholder='Enter price'
                   className="custom-input"
                   value={formData.productPrice}
-                  onChange={handleChange}  
+                  onChange={handleChange}
                   />
               </div>
             </div>
@@ -112,5 +106,4 @@ const AddProduct = ({open,setOpen}) => {
     </>
   )
 }
-
 export default AddProduct

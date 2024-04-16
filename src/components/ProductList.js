@@ -1,46 +1,32 @@
 // ProductList.js
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
-import "./product.css"
-import { TITLE } from '../constants';
+import "./product.css";
 import AddProduct from './AddProduct';
-import DeleteProduct from './DeleteProduct';
-
 const fetchProducts = async () => {
   const response = await fetch('https://dummyjson.com/products?limit=0');
   const data = await response.json();
-  console.log("DATA", data);
   return data.products;
 };
-
 const ProductList = () => {
   const { data, isLoading, error } = useQuery('products', fetchProducts);
+  const [product, setProduct]=useState()
   const [openModal, setOpenModal] = useState(false)
-  // const [deleteOpenModal, setDeleteOpenModal] = useState(false)
-  // const [value, setValue] = useState({})
 
-  const addList = (value)=>{
-    //  data = [value , ...data]
-    for(let i = 0; i < value.length;i++){
-      data.unshift(value[i]);
-    }
-    // data.unshift(value);
-  }
   const openProduct = () => {
     setOpenModal(!openModal)
   }
 
-  // useEffect(()=>{
-  //   addList(newData);
-  // },[data])
+  useEffect(()=>{
+    (async()=>{
+      const val = await fetchProducts()
+      setProduct(val)
+    })()
+    
+  },[])
 
-  // const deleteModal = (val) => {
-  //   setValue(val)
-  //   setDeleteOpenModal(true)
-  // }
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div style={{display:"flex",justifyContent:"center",alignItems:"center",height:"100vh"}}> <h3> Loading...</h3></div>;
   if (error) return <div>Error: {error.message}</div>;
-
   return (
     <>
     <div className='displDataList'>
@@ -51,10 +37,10 @@ const ProductList = () => {
     </div>
     <div className='flxData'>
       {
-        data?.map((itm) => {
+        product?.map((itm) => {
           return (
             <div className="product-card">
-              <img className="product-image" src={itm?.images?.[0]} alt={"img/"} />
+              <img className="product-image" src={itm?.images?.[0] || process.env.PUBLIC_URL + '/dummy.jpg'} alt={"img/"} />
               <div className="product-details">
                 <h2 className="product-name">{itm?.title}</h2>
                 <p className="product-description">{itm?.description}</p>
@@ -70,12 +56,12 @@ const ProductList = () => {
           <AddProduct
             open={openModal}
             setOpen={setOpenModal}
-            addList={addList}
+            setProduct={setProduct}
+            product={product}
           />
         )
       }
     </>
   );
 };
-
 export default ProductList;
